@@ -1,9 +1,9 @@
 resources:
-  - name: petclinic_repo
+  - name: myRepo
     type: GitRepo
     configuration:
       path: mjmckay/workshop-jfrog-linkerd
-      gitProvider: MyGitHub
+      gitProvider: petclinicRepo
       branches:
         include: main
       buildOn:
@@ -21,22 +21,22 @@ pipelines:
             name: linkerdworkshop.jfrog.io/workshop-docker/alpine/k8slinkerd
             tag: v0.1.0
             autoPull: true
-            registry: MyArtifactory
+            registry: myArtifactory
             sourceRepository: workshop-docker
     steps:
       - name: kubernetes_deploy
         type: Bash
         configuration:
           integrations:
-            - name: MyCluster
+            - name: myKonfig
           inputResources:
-            - name: petclinic_repo
+            - name: myRepo
         execution:
           onExecute:
             - cd $res_petclinic_repo_resourcePath/spring-petclinic-cloud
             - export REPOSITORY_PREFIX=springcommunity
             - mkdir $HOME/.kube
-            - echo $int_MyCluster_kubeconfig > $HOME/.kube/config
+            - echo $int_myKonfig_kubeconfig > $HOME/.kube/config
             - cat $HOME/.kube/config
             - kubectl apply -f k8s/init-namespace
             - kubectl apply -f k8s/init-services
